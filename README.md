@@ -14,8 +14,8 @@ By leveraging **Hedera Hashgraph’s Token Service (HTS)**, **Consensus Service 
 CrisisChain’s mission is simple but powerful:  
 > *Ensure that every act of giving truly reaches its destination — with fairness, security, and trust.*
 
-🌐 **Live Demo:** [https://crisischain-blockchain-powered-aid.vercel.app/]
-📺 **Video Demo:** [(https://youtu.be/KMIH9g2GQ-I?si=B8i3DvxUZ6DZprya)]
+🌐 **Live Demo:** (https://crisischain-blockchain-powered-aid.vercel.app/)
+📺 **Video Demo:** (https://youtu.be/KMIH9g2GQ-I?si=B8i3DvxUZ6DZprya)
 
 ---
 
