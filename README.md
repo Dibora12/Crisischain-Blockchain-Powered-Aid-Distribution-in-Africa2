@@ -124,7 +124,7 @@ Creating a threshold account costs ~$1, allowing small NGOs to adopt **enterpris
 |-------|-------------|
 | Frontend | React.js + TailwindCSS |
 | Backend | Node.js + Express |
-| Database | MongoDB / PostgreSQL |
+| Database | Supabase |
 | Blockchain | Hedera Hashgraph SDK (HTS, HCS, Scheduled Tx) |
 | Storage | IPFS (for aid receipts) |
 | AI Module | Python (for need scoring) |
