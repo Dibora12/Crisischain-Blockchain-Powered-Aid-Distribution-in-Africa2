@@ -19,6 +19,9 @@ CrisisChain’s mission is simple but powerful:
 
 📺 **Video Demo:** (https://youtu.be/KMIH9g2GQ-I?si=B8i3DvxUZ6DZprya)
 
+📃Pitch deck:** (https://eu.docs.wps.com/module/common/loadPlatform/?sa=601.1037&sid=sIBzR1Li7AYXFhsMG&v=v2)
+
+📝Hedera Certificate link:** (https://drive.google.com/file/d/1w3cUbRK8vW58oIo8cQwQoIi3gXdD743C/view?usp=sharing)
 ---
 
 ## 💡 Problem
