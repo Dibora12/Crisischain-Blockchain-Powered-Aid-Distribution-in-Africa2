@@ -5,7 +5,7 @@
 
 ---
 
-## 🧩 Project Overview
+## 🧩 Project Overview 
 
 **CrisisChain** is a **Hedera-powered aid distribution platform** built to ensure that every donation and humanitarian resource in Africa is **transparent, traceable, and tamper-proof**.  
 
