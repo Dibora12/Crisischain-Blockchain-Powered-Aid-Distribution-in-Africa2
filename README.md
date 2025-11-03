@@ -1,5 +1,6 @@
 
 # 🌍 CrisisChain: Blockchain-Powered Aid Distribution for Africa  
+
 **Track:** 💸 1. Onchain Finance & Real-World Assets (RWA) 
 **Hackathon:** Hedera Africa Hackathon 2025  
 
@@ -86,6 +87,10 @@ Creating a threshold account costs ~$1, allowing small NGOs to adopt **enterpris
 ## 🧠 Architecture Diagram
 
 <img width="1536" height="1024" alt="e741140b-5f54-4472-9937-3ec4cf13e5ad" src="https://github.com/user-attachments/assets/acef8c3c-1ea0-4959-a46c-b54d7baa4388" />
+
+
+
+
 ┌──────────────────────────────────────────────────────────────┐
 │ CrisisChain Architecture │
 └──────────────────────────────────────────────────────────────┘
@@ -146,41 +151,41 @@ Creating a threshold account costs ~$1, allowing small NGOs to adopt **enterpris
 git clone https://github.com/Dibora12/Crisischain-Blockchain-Powered-Aid-Distribution-in-Africa2.git
 cd crisischain
 npm install
-
 Run
-
 npm run dev
 
-📊 Current Status
+         📊 Current Status
 
 ✅ Testnet Deployed (Demo live on Hedera Testnet)
 🚧 Mainnet Ready — pending finalization
 🧍‍♀️ Solo Developer: Dibora Shibeshi
 📦 Modules Completed:
 
-Tokenized Aid Distribution
+      * Tokenized Aid Distribution
 
-Beneficiary Verification (DID)
+       *Beneficiary Verification (DID)
 
-Transparent Audit Dashboard
+       *Transparent Audit Dashboard
 
-Multi-sig Scheduled Transaction Flow
+       *Multi-sig Scheduled Transaction Flow
 
-AI-powered Need Scoring (Prototype)-undergoing
+       *AI-powered Need Scoring (Prototype)-undergoing
 
-🧾 License
+                 🧾 License
 
 MIT License © 2025 Dibora Shibeshi
 
-🤝 Acknowledgments
+            🤝 Acknowledgments
 
 Built for the Hedera Africa Hackathon 2025 with support from:
 
-Hedera Hashgraph
+   * Hedera Hashgraph
 
-HashPack Wallet
+   *HashPack Wallet
 
-Supabase
+   *Blade Wallet
+
+    *Supabase
 
 African Blockchain Community 🌍💚
 
