@@ -4,7 +4,7 @@
 **Track:** 💸 1. Onchain Finance & Real-World Assets (RWA) 
 **Hackathon:** Hedera Africa Hackathon 2025  
 
----
+--- 
 
 ## 🧩 Project Overview 
 
