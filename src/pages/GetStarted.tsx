@@ -34,7 +34,7 @@ const GetStarted = () => {
     {
       icon: Zap,
       title: "Instant Transfers",
-      description: "Fast, low-cost transactions powered by Midnight blockchain"
+      description: "Fast, low-cost transactions powered by Cardano blockchain"
     }
   ];
 
@@ -47,7 +47,7 @@ const GetStarted = () => {
             <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">C</span>
             </div>
-            <span className="text-white font-bold text-xl">CrisisChain</span>
+            <span className="text-white font-bold text-xl">AfricaChainAid</span>
           </div>
           <Link 
             to="/auth" 
@@ -130,7 +130,7 @@ const GetStarted = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Why Choose CrisisChain?
+              Why Choose AfricaChainAid?
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Our platform combines cutting-edge blockchain technology with humanitarian values 
@@ -178,7 +178,7 @@ const GetStarted = () => {
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-400 mb-2">
-            © 2025 CrisisChain. Empowering communities through blockchain technology.
+            © 2025 AfricaChainAid. Empowering communities through blockchain technology.
           </p>
           <p className="text-sm text-gray-500">
             Powered by Blockchain + Supabase

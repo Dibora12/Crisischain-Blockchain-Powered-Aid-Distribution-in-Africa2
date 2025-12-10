@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useCreateToken } from '@/hooks/useTokens';
-import { useHederaWallet } from '@/hooks/useHederaWallet';
-import { WalletSelector } from '@/components/WalletSelector';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
@@ -24,7 +22,6 @@ interface CreateTokenFormProps {
 }
 
 export function CreateTokenForm({ onSuccess }: CreateTokenFormProps) {
-  const { connectedWallet, accountId } = useHederaWallet();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,33 +34,15 @@ export function CreateTokenForm({ onSuccess }: CreateTokenFormProps) {
   const createToken = useCreateToken();
 
   const onSubmit = async (data: FormData) => {
-    if (!connectedWallet || !accountId) {
-      return;
-    }
-
-    const walletProvider = connectedWallet.toLowerCase().includes('hashpack') ? 'hashpack' : 'blade';
-
     await createToken.mutateAsync({
       name: data.name,
       symbol: data.symbol.toUpperCase(),
       supply: data.supply,
-      walletProvider,
     });
     
     form.reset();
     onSuccess?.();
   };
-
-  if (!connectedWallet || !accountId) {
-    return (
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Connect your Hedera wallet to create tokens
-        </p>
-        <WalletSelector />
-      </div>
-    );
-  }
 
   return (
     <Form {...form}>

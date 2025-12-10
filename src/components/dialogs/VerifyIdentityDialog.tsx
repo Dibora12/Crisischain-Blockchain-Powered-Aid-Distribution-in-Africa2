@@ -15,7 +15,7 @@ export function VerifyIdentityDialog({ open, onOpenChange }: VerifyIdentityDialo
         <DialogHeader>
           <DialogTitle>Apply for Identity Verification</DialogTitle>
           <DialogDescription>
-            Submit your application to become a trusted identity verifier in the CrisisChain network.
+            Submit your application to become a trusted identity verifier in the AfricaChainAid network.
           </DialogDescription>
         </DialogHeader>
         <VerifyIdentityForm onSuccess={() => onOpenChange(false)} />

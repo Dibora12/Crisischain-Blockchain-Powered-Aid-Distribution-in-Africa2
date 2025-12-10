@@ -11,7 +11,7 @@ export interface VerifierApplication {
   status: string;
   zk_verified: boolean;
   zk_proof_hash?: string;
-  midnight_tx_hash?: string;
+  cardano_tx_hash?: string;
   created_at: string;
   updated_at: string;
 }
@@ -47,7 +47,7 @@ export const useCreateVerifierApplication = () => {
       
       // Simulate zero-knowledge verification
       const zkProofHash = `zk_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const midnightTxHash = `midnight_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const cardanoTxHash = `cardano_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       const { data, error } = await supabase
         .from('verifier_applications')
@@ -57,7 +57,7 @@ export const useCreateVerifierApplication = () => {
           motivation: application.motivation,
           zk_verified: true, // Simulated ZK verification
           zk_proof_hash: zkProofHash,
-          midnight_tx_hash: midnightTxHash,
+          midnight_tx_hash: cardanoTxHash,
           status: 'pending',
         })
         .select()

@@ -15,7 +15,7 @@ export function NewRegistrationDialog({ open, onOpenChange }: NewRegistrationDia
         <DialogHeader>
           <DialogTitle>New Identity Registration</DialogTitle>
           <DialogDescription>
-            Register your identity information to participate in the CrisisChain network.
+            Register your identity information to participate in the AfricaChainAid network.
           </DialogDescription>
         </DialogHeader>
         <NewRegistrationForm onSuccess={() => onOpenChange(false)} />

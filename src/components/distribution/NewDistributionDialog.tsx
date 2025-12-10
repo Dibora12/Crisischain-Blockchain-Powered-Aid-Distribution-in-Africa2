@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateDistribution } from "@/hooks/useDistributions";
 import { useCreateAidToken } from "@/hooks/useAidTokens";
-import { useHederaWallet } from "@/hooks/useHederaWallet";
 import { Shield, Plus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,7 +21,6 @@ export function NewDistributionDialog() {
 
   const createDistribution = useCreateDistribution();
   const createAidToken = useCreateAidToken();
-  const { walletProvider } = useHederaWallet();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,18 +30,12 @@ export function NewDistributionDialog() {
       return;
     }
 
-    if (!walletProvider) {
-      toast.error("Please connect your wallet first");
-      return;
-    }
-
     try {
       // Create the distribution record
       const distribution = await createDistribution.mutateAsync({
         recipient_id: recipientId,
         amount: parseFloat(amount),
         aid_request_id: "system-generated", // This would normally come from an aid request
-        walletProvider,
       });
 
       // Create the corresponding aid token
@@ -56,7 +48,6 @@ export function NewDistributionDialog() {
         token_type: tokenType as any,
         restrictions: restrictions.split(",").map(r => r.trim()).filter(Boolean),
         expires_at: expiryDate.toISOString(),
-        walletProvider,
       });
 
       setOpen(false);
@@ -66,7 +57,7 @@ export function NewDistributionDialog() {
       setRestrictions("");
       setExpiryDays("90");
 
-      toast.success("Distribution created successfully on Hedera!");
+      toast.success("Distribution created successfully with Midnight privacy protection!");
     } catch (error) {
       console.error("Failed to create distribution:", error);
     }
@@ -87,7 +78,7 @@ export function NewDistributionDialog() {
             Create New Aid Distribution
           </DialogTitle>
           <DialogDescription>
-            Create a secure, transparent aid distribution using Hedera blockchain technology.
+            Create a secure, private aid distribution using Midnight blockchain technology.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

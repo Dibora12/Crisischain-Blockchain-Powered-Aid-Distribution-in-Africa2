@@ -12,9 +12,9 @@ export default function Index() {
     <div className="container mx-auto px-4 py-8 space-y-8">
       <div className="flex flex-col lg:flex-row items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Crisis Aid Dashboard</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">AfricaChainAid Dashboard</h1>
           <p className="text-muted-foreground">
-            Privacy-preserving humanitarian aid distribution powered by Midnight blockchain
+            Privacy-preserving humanitarian aid distribution powered by Cardano blockchain
           </p>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function Index() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-green-600 dark:text-green-400 mb-4 leading-relaxed">
-              Create and distribute privacy-preserving aid tokens powered by Midnight blockchain technology.
+              Create and distribute privacy-preserving aid tokens powered by Cardano blockchain technology.
             </p>
             <Button className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200">
               <CreditCard className="h-4 w-4 mr-2" />

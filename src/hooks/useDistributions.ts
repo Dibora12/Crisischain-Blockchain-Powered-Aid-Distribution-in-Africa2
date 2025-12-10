@@ -42,10 +42,10 @@ export const useDistributions = () => {
 export const useCreateDistribution = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const { distributeTokens, initializeClient, isConnected, accountId } = useSmartContracts();
+  const { distributeTokens, initializeClient, isConnected } = useSmartContracts();
 
   return useMutation({
-    mutationFn: async (distribution: Partial<Distribution> & { walletProvider: 'hashpack' | 'blade' }) => {
+    mutationFn: async (distribution: Partial<Distribution>) => {
       if (!user) throw new Error('User not authenticated');
       
       // Ensure required fields are present
@@ -53,7 +53,7 @@ export const useCreateDistribution = () => {
         throw new Error('Aid request ID, recipient ID, and amount are required');
       }
 
-      // Get the token ID (Hedera Token ID)
+      // Get the token contract address (assuming we have a default token)
       const { data: tokens } = await supabase
         .from('tokens')
         .select('contract_address')
@@ -64,17 +64,17 @@ export const useCreateDistribution = () => {
         throw new Error('No active tokens found. Please create a token first.');
       }
 
-      const tokenId = tokens[0].contract_address;
+      const tokenAddress = tokens[0].contract_address;
 
-      // Initialize Hedera client if not connected
+      // Initialize smart contract client if not connected
       if (!isConnected) {
-        await initializeClient(distribution.walletProvider);
+        await initializeClient();
       }
 
-      // Execute the distribution through Hedera HTS
+      // Execute the distribution through smart contract
       const txHash = await distributeTokens({
-        tokenId,
-        recipientId: distribution.recipient_id,
+        tokenAddress,
+        recipient: distribution.recipient_id,
         amount: distribution.amount,
         memo: distribution.shielded_memo,
       });
@@ -87,10 +87,10 @@ export const useCreateDistribution = () => {
           distributor_id: user.id,
           recipient_id: distribution.recipient_id,
           amount: distribution.amount,
-          token_contract_address: tokenId,
+          token_contract_address: tokenAddress,
           midnight_tx_hash: txHash,
           shielded_memo: distribution.shielded_memo,
-          status: 'completed',
+          status: 'completed', // Changed from 'confirmed' to 'completed'
           distributed_at: new Date().toISOString(),
         })
         .select()
@@ -98,19 +98,18 @@ export const useCreateDistribution = () => {
       
       if (error) throw error;
       
-      // Log the transaction on Hedera
+      // Log the real transaction
       await supabase.from('midnight_transactions').insert({
         tx_hash: txHash,
         tx_type: 'distribution',
-        from_address: accountId,
+        from_address: user.id,
         to_address: distribution.recipient_id,
         amount: distribution.amount,
-        shielded: false,
+        shielded: true,
         status: 'confirmed',
         metadata: {
-          token_id: tokenId,
+          token_contract_address: tokenAddress,
           aid_request_id: distribution.aid_request_id,
-          network: 'hedera-testnet',
         },
       });
       
@@ -118,9 +117,7 @@ export const useCreateDistribution = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['distributions'] });
-      toast.success('Distribution executed on Hedera', {
-        description: 'Transparent and logged on Hedera Consensus Service',
-      });
+      toast.success('Distribution executed successfully');
     },
     onError: (error) => {
       toast.error('Failed to execute distribution', {

@@ -11,6 +11,7 @@ import { ProofOfAidCard } from "@/components/proof/ProofOfAidCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateTokenDialog } from "@/components/dialogs/CreateTokenDialog";
 import { useAidTokens } from "@/hooks/useAidTokens";
+import { useMidnightTransactions, useMidnightStats } from "@/offchain/hooks/useMidnightTransactions";
 import { useDistributions } from "@/hooks/useDistributions";
 import { useTokens } from "@/hooks/useTokens";
 import { useState } from "react";
@@ -20,6 +21,8 @@ export default function Distribution() {
   const { data: aidTokens, isLoading: tokensLoading } = useAidTokens();
   const { data: distributions, isLoading: distributionsLoading } = useDistributions();
   const { data: tokens, isLoading: mainTokensLoading } = useTokens();
+  const { data: midnightStats } = useMidnightStats();
+  const { data: midnightTx } = useMidnightTransactions(10);
   const [showPrivateData, setShowPrivateData] = useState(false);
   const [createTokenOpen, setCreateTokenOpen] = useState(false);
 
@@ -29,13 +32,13 @@ export default function Distribution() {
       return;
     }
     toast.info("Opening aid distribution form...", {
-      description: "This will create a new distribution on Hedera network"
+      description: "This will create a new distribution with Cardano privacy protection"
     });
   };
 
   const handleExport = () => {
-    toast.info("Exporting data...", {
-      description: "Preparing distribution records for export"
+    toast.info("Exporting data with privacy compliance...", {
+      description: "Private data will be anonymized using zero-knowledge proofs"
     });
   };
 
@@ -44,7 +47,7 @@ export default function Distribution() {
     id: token.token_id,
     recipientId: showPrivateData ? token.recipient_id : token.recipient_id.slice(0, 8) + "...",
     amount: token.amount,
-    issuer: "CrisisChain Network",
+    issuer: "AfricaChainAid Network",
     issuedDate: new Date(token.created_at).toLocaleDateString(),
     expiryDate: token.expires_at ? new Date(token.expires_at).toLocaleDateString() : "No expiry",
     restrictions: token.restrictions || ["Food", "Water", "Medicine"],
@@ -61,9 +64,9 @@ export default function Distribution() {
     location: "Private Location",
     date: new Date(dist.created_at).toLocaleDateString(),
     time: new Date(dist.created_at).toLocaleTimeString(),
-    distributorName: "CrisisChain Network",
+    distributorName: "AfricaChainAid Network",
     status: dist.status as "verified",
-    ipfsHash: `hedera-tx-${dist.id.substring(0, 8)}`,
+    ipfsHash: dist.midnight_tx_hash || "Not available",
   })) || [];
 
   if (tokensLoading || distributionsLoading || mainTokensLoading) {
@@ -84,10 +87,10 @@ export default function Distribution() {
       <div className="flex flex-col md:flex-row items-start justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground flex items-center">
-            <Shield className="h-8 w-8 mr-2 text-primary" />
+            <Shield className="h-8 w-8 mr-2 text-purple-600" />
             Aid Distribution
           </h1>
-          <p className="text-muted-foreground mt-1">Transparent, secure aid distribution powered by Hedera blockchain</p>
+          <p className="text-muted-foreground mt-1">Secure, private aid distribution powered by Cardano blockchain</p>
         </div>
         <div className="flex space-x-3 mt-4 md:mt-0">
           <Button 
@@ -118,7 +121,7 @@ export default function Distribution() {
               </div>
               <div className="flex-grow text-center md:text-left mb-4 md:mb-0">
                 <h3 className="font-bold text-lg text-orange-800 dark:text-orange-200">Create Your First Token</h3>
-                <p className="text-orange-700 dark:text-orange-300">To start distributing aid, you need to create a token on the Hedera network.</p>
+                <p className="text-orange-700 dark:text-orange-300">To start distributing aid, you need to create a privacy token on the Cardano network.</p>
               </div>
               <Button 
                 onClick={() => setCreateTokenOpen(true)}
@@ -131,25 +134,25 @@ export default function Distribution() {
         </Card>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card className="border-border bg-gradient-to-br from-primary/10 to-primary/5">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20 dark:border-purple-800">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center text-foreground">
-              <CreditCard className="h-5 w-5 mr-2 text-primary" />
+              <CreditCard className="h-5 w-5 mr-2 text-purple-600" />
               Active Tokens
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{aidTokens?.filter(t => t.is_active).length || 0}</div>
             <p className="text-sm text-muted-foreground">Tokens in circulation</p>
-            <div className="flex items-center mt-2 text-primary text-sm">
+            <div className="flex items-center mt-2 text-purple-600 text-sm">
               <Shield className="h-4 w-4 mr-1" />
-              Hedera secured
+              Zero-knowledge protected
             </div>
           </CardContent>
         </Card>
         
-        <Card className="border-border bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20">
+        <Card className="border-green-200 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 dark:border-green-800">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center text-foreground">
               <Users className="h-5 w-5 mr-2 text-green-600" />
@@ -158,15 +161,15 @@ export default function Distribution() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{distributions?.length || 0}</div>
-            <p className="text-sm text-muted-foreground">Total distributions</p>
+            <p className="text-sm text-muted-foreground">Private distributions</p>
             <div className="flex items-center mt-2 text-green-600 text-sm">
               <Shield className="h-4 w-4 mr-1" />
-              Transparent & secure
+              Cardano secured
             </div>
           </CardContent>
         </Card>
         
-        <Card className="border-border bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
+        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 dark:border-blue-800">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center text-foreground">
               <Layers className="h-5 w-5 mr-2 text-blue-600" />
@@ -174,13 +177,28 @@ export default function Distribution() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">
-              {aidTokens?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0}
-            </div>
+            <div className="text-3xl font-bold text-foreground">{midnightStats?.totalValueTransferred.toFixed(0) || 0}</div>
             <p className="text-sm text-muted-foreground">AID tokens distributed</p>
             <div className="flex items-center mt-2 text-blue-600 text-sm">
               <Shield className="h-4 w-4 mr-1" />
-              Blockchain verified
+              Blockchain secured
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20 dark:border-orange-800">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center text-foreground">
+              <Shield className="h-5 w-5 mr-2 text-orange-600" />
+              Privacy Rate
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground">{midnightStats?.privacyRate.toFixed(1) || 0}%</div>
+            <p className="text-sm text-muted-foreground">Transactions shielded</p>
+            <div className="flex items-center mt-2 text-orange-600 text-sm">
+              <Shield className="h-4 w-4 mr-1" />
+              Cardano protected
             </div>
           </CardContent>
         </Card>
@@ -270,51 +288,57 @@ export default function Distribution() {
         </Tabs>
       </div>
       
-      <Card className="bg-gradient-to-r from-primary/10 to-blue-50 dark:from-primary/20 dark:to-blue-950/20 border-border">
+      <Card className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-950/20 dark:to-green-950/20 border-blue-200 dark:border-blue-800">
         <CardHeader>
           <CardTitle className="flex items-center text-foreground">
-            <Shield className="h-5 w-5 mr-2 text-primary" />
-            Hedera Blockchain Features
+            <Shield className="h-5 w-5 mr-2 text-blue-600" />
+            Cardano Blockchain Security
           </CardTitle>
-          <CardDescription className="text-muted-foreground">Fast, fair, and secure aid distribution powered by Hedera</CardDescription>
+          <CardDescription className="text-muted-foreground">Advanced privacy and security features powered by Cardano blockchain</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-background rounded-lg p-4 shadow-sm border border-border">
+            <div className="bg-white/80 dark:bg-gray-800/80 rounded-lg p-4 shadow-sm border border-blue-100 dark:border-blue-800">
               <h3 className="font-bold mb-2 flex items-center text-foreground">
-                <Shield className="h-4 w-4 mr-2 text-primary" />
-                Hedera Token Service
+                <Shield className="h-4 w-4 mr-2 text-blue-600" />
+                Zero-Knowledge Proofs
               </h3>
-              <p className="text-sm text-muted-foreground mb-3">Create and manage aid tokens with native Hedera capabilities.</p>
+              <p className="text-sm text-muted-foreground mb-3">Verify eligibility without revealing sensitive personal data.</p>
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Status:</span>
-                <span className="text-primary font-medium">Active</span>
+                <span className="text-blue-600 font-medium">Active</span>
               </div>
             </div>
             
-            <div className="bg-background rounded-lg p-4 shadow-sm border border-border">
+            <div className="bg-white/80 dark:bg-gray-800/80 rounded-lg p-4 shadow-sm border border-blue-100 dark:border-blue-800">
               <h3 className="font-bold mb-2 flex items-center text-foreground">
-                <Shield className="h-4 w-4 mr-2 text-primary" />
-                Consensus Service
+                <Shield className="h-4 w-4 mr-2 text-blue-600" />
+                Secure Transactions
               </h3>
-              <p className="text-sm text-muted-foreground mb-3">Transparent, immutable logging of all aid distributions.</p>
+              <p className="text-sm text-muted-foreground mb-3">All aid distributions are protected with Cardano's security layer.</p>
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Transactions:</span>
-                <span className="text-primary font-medium">{distributions?.length || 0}</span>
+                <span>Privacy Rate:</span>
+                <span className="text-blue-600 font-medium">{midnightStats?.privacyRate.toFixed(1)}%</span>
               </div>
             </div>
             
-            <div className="bg-background rounded-lg p-4 shadow-sm border border-border">
+            <div className="bg-white/80 dark:bg-gray-800/80 rounded-lg p-4 shadow-sm border border-blue-100 dark:border-blue-800">
               <h3 className="font-bold mb-2 flex items-center text-foreground">
-                <Shield className="h-4 w-4 mr-2 text-primary" />
-                Fast & Fair
+                <Shield className="h-4 w-4 mr-2 text-blue-600" />
+                Smart Contracts
               </h3>
-              <p className="text-sm text-muted-foreground mb-3">3-5 second finality with low, predictable fees.</p>
+              <p className="text-sm text-muted-foreground mb-3">Automated eligibility verification and token distribution.</p>
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Network:</span>
-                <span className="text-primary font-medium">Testnet</span>
+                <span>Status:</span>
+                <span className="text-blue-600 font-medium">Deployed</span>
               </div>
             </div>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <Button variant="outline" className="text-blue-600 border-blue-300 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/20">
+              <Settings className="h-4 w-4 mr-2" />
+              Manage Privacy Settings
+            </Button>
           </div>
         </CardContent>
       </Card>

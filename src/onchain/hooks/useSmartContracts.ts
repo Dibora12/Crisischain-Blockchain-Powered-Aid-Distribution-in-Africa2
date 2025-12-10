@@ -1,27 +1,24 @@
 
 import { useState, useCallback } from 'react';
-import { HederaClient, HEDERA_CONFIG, type TokenCreationParams, type TokenDistributionParams } from '@/onchain/contracts/HederaClient';
+import { CardanoClient, CARDANO_CONFIG, type TokenCreationParams, type DistributionParams } from '@/onchain/contracts/CardanoClient';
+import { AidTokenContract } from '@/onchain/contracts/AidTokenContract';
 import { toast } from 'sonner';
-import { useHederaWallet } from '@/hooks/useHederaWallet';
 
 export const useSmartContracts = () => {
-  const [client, setClient] = useState<HederaClient | null>(null);
+  const [client, setClient] = useState<CardanoClient | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { connectedWallet, accountId } = useHederaWallet();
 
-  const initializeClient = useCallback(async (walletProvider: 'hashpack' | 'blade') => {
+  const initializeClient = useCallback(async () => {
     try {
       setIsLoading(true);
-      const hederaClient = new HederaClient(HEDERA_CONFIG);
-      await hederaClient.connectWallet(walletProvider);
-      setClient(hederaClient);
+      const cardanoClient = new CardanoClient(CARDANO_CONFIG);
+      await cardanoClient.connectWallet();
+      setClient(cardanoClient);
       setIsConnected(true);
-      toast.success('Connected to Hedera network', {
-        description: 'Your wallet is ready for transactions',
-      });
+      toast.success('Connected to Cardano blockchain');
     } catch (error: any) {
-      toast.error('Failed to connect to Hedera', {
+      toast.error('Failed to connect to Cardano blockchain', {
         description: error.message,
       });
       throw error;
@@ -30,47 +27,40 @@ export const useSmartContracts = () => {
     }
   }, []);
 
-  const createToken = useCallback(async (params: TokenCreationParams) => {
+  const deployToken = useCallback(async (params: TokenCreationParams) => {
     if (!client) {
-      throw new Error('Hedera client not initialized');
-    }
-
-    if (!accountId) {
-      throw new Error('Wallet not connected');
+      throw new Error('Cardano client not initialized');
     }
 
     try {
       setIsLoading(true);
-      const result = await client.createToken({
-        ...params,
-        treasuryAccountId: accountId,
+      const deployment = await client.deployTokenContract(params);
+      toast.success('Smart contract deployed successfully', {
+        description: `Contract Address: ${deployment.contractAddress.slice(0, 10)}...`,
       });
-      toast.success('Token created on Hedera', {
-        description: `Token ID: ${result.tokenId}`,
-      });
-      return result;
+      return deployment;
     } catch (error: any) {
-      toast.error('Failed to create token', {
+      toast.error('Failed to deploy smart contract', {
         description: error.message,
       });
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, [client, accountId]);
+  }, [client]);
 
-  const distributeTokens = useCallback(async (params: TokenDistributionParams) => {
+  const distributeTokens = useCallback(async (params: DistributionParams) => {
     if (!client) {
-      throw new Error('Hedera client not initialized');
+      throw new Error('Cardano client not initialized');
     }
 
     try {
       setIsLoading(true);
-      const txId = await client.transferTokens(params);
+      const txHash = await client.distributeTokens(params);
       toast.success('Tokens distributed successfully', {
-        description: `Transaction ID: ${txId}`,
+        description: `Transaction: ${txHash.slice(0, 10)}...`,
       });
-      return txId;
+      return txHash;
     } catch (error: any) {
       toast.error('Failed to distribute tokens', {
         description: error.message,
@@ -81,32 +71,20 @@ export const useSmartContracts = () => {
     }
   }, [client]);
 
-  const getTokenBalance = useCallback(async (tokenId: string, accountId: string) => {
+  const getTokenContract = useCallback((contractAddress: string) => {
     if (!client) {
-      throw new Error('Hedera client not initialized');
+      throw new Error('Cardano client not initialized');
     }
-    return await client.getTokenBalance(accountId, tokenId);
-  }, [client]);
-
-  const logToConsensus = useCallback(async (message: string) => {
-    if (!client) {
-      throw new Error('Hedera client not initialized');
-    }
-    return await client.logToConsensus({
-      topicId: HEDERA_CONFIG.transparencyTopicId,
-      message,
-    });
+    return new AidTokenContract(contractAddress, client);
   }, [client]);
 
   return {
     client,
     isConnected,
     isLoading,
-    accountId,
     initializeClient,
-    createToken,
+    deployToken,
     distributeTokens,
-    getTokenBalance,
-    logToConsensus,
+    getTokenContract,
   };
 };

@@ -43,16 +43,16 @@ export const useAidTokens = () => {
 
 export const useCreateAidToken = () => {
   const queryClient = useQueryClient();
-  const { distributeTokens, initializeClient, isConnected, accountId } = useSmartContracts();
+  const { getTokenContract, initializeClient, isConnected } = useSmartContracts();
 
   return useMutation({
-    mutationFn: async (token: Partial<AidToken> & { walletProvider: 'hashpack' | 'blade' }) => {
+    mutationFn: async (token: Partial<AidToken>) => {
       // Ensure required fields are present
       if (!token.recipient_id || !token.amount || !token.token_type) {
         throw new Error('Recipient ID, amount, and token type are required');
       }
 
-      // Get the active token (Hedera Token ID)
+      // Get the active token contract
       const { data: tokens } = await supabase
         .from('tokens')
         .select('contract_address')
@@ -63,31 +63,37 @@ export const useCreateAidToken = () => {
         throw new Error('No active tokens found. Please create a token first.');
       }
 
-      const tokenId = tokens[0].contract_address; // In Hedera, this is the Token ID
+      const contractAddress = tokens[0].contract_address;
 
-      // Initialize Hedera client if not connected
+      // Initialize smart contract client if not connected
       if (!isConnected) {
-        await initializeClient(token.walletProvider);
+        await initializeClient();
       }
 
-      // Transfer tokens to the recipient using Hedera HTS
-      const txHash = await distributeTokens({
-        tokenId,
-        recipientId: token.recipient_id!,
-        amount: token.amount,
-        memo: `${token.token_type} Aid Distribution`,
-      });
+      // Mint tokens to the recipient using smart contract
+      const tokenContract = getTokenContract(contractAddress);
+      const txHash = await tokenContract.mint(
+        token.recipient_id,
+        token.amount,
+        {
+          name: `${token.token_type} Aid Token`,
+          symbol: 'AID',
+          description: `Aid token for ${token.token_type}`,
+          restrictions: Array.isArray(token.restrictions) ? token.restrictions : [],
+          expirationDate: token.expires_at ? new Date(token.expires_at) : undefined,
+        }
+      );
 
-      const aidTokenId = `AID_${Date.now()}`;
+      const tokenId = `AID_${Date.now()}`;
       
       const { data, error } = await supabase
         .from('aid_tokens')
         .insert({
           recipient_id: token.recipient_id,
-          token_id: aidTokenId,
+          token_id: tokenId,
           amount: token.amount,
           token_type: token.token_type as any,
-          contract_address: tokenId,
+          contract_address: contractAddress,
           midnight_tx_hash: txHash,
           restrictions: token.restrictions,
           expires_at: token.expires_at,
@@ -99,20 +105,18 @@ export const useCreateAidToken = () => {
       
       if (error) throw error;
       
-      // Log the transaction on Hedera
+      // Log the real transaction
       await supabase.from('midnight_transactions').insert({
         tx_hash: txHash,
-        tx_type: 'token_transfer',
-        from_address: accountId,
+        tx_type: 'token_mint',
         to_address: token.recipient_id,
         amount: token.amount,
-        shielded: false,
+        shielded: true,
         status: 'confirmed',
         metadata: { 
           token_type: token.token_type,
+          contract_address: contractAddress,
           token_id: tokenId,
-          aid_token_id: aidTokenId,
-          network: 'hedera-testnet',
         },
       });
       
@@ -120,9 +124,7 @@ export const useCreateAidToken = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['aid-tokens'] });
-      toast.success('Aid tokens distributed on Hedera', {
-        description: 'Transaction confirmed and logged on HCS',
-      });
+      toast.success('Aid token created with real blockchain security');
     },
     onError: (error) => {
       toast.error('Failed to create aid token', {

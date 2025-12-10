@@ -15,7 +15,7 @@ export function Footer() {
                   <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <span className="font-bold text-chai-darkblue">CrisisChain</span>
+              <span className="font-bold text-chai-darkblue">AfricaChainAid</span>
             </div>
             <p className="text-sm text-chai-gray mt-2">Blockchain-Powered Aid Distribution for Africa</p>
           </div>
@@ -28,12 +28,12 @@ export function Footer() {
           </div>
           
           <div className="mt-4 md:mt-0">
-            <p className="text-sm text-chai-gray">© 2025 CrisisChain. All rights reserved.</p>
+            <p className="text-sm text-chai-gray">© 2025 AfricaChainAid. All rights reserved.</p>
           </div>
         </div>
         
         <div className="mt-8 text-xs text-center text-chai-gray">
-          <p>Powered by Hedera | IPFS | Biometric Authentication</p>
+          <p>Powered by Cardano | IPFS | Biometric Authentication</p>
           <p className="mt-1">This is a demo application for humanitarian aid distribution using blockchain technology.</p>
         </div>
       </div>

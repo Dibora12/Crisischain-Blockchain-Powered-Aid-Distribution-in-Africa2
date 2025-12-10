@@ -9,9 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useCreateDistribution } from '@/hooks/useDistributions';
-import { useHederaWallet } from '@/hooks/useHederaWallet';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 const formSchema = z.object({
   recipientId: z.string().min(1, 'Please select a recipient'),
@@ -38,20 +36,13 @@ export function DistributeAidForm({ onSuccess }: DistributeAidFormProps) {
   });
 
   const createDistribution = useCreateDistribution();
-  const { walletProvider } = useHederaWallet();
 
   const onSubmit = async (data: FormData) => {
-    if (!walletProvider) {
-      toast.error('Please connect your wallet first');
-      return;
-    }
-
     await createDistribution.mutateAsync({
       aid_request_id: data.aidRequestId,
       recipient_id: data.recipientId,
       amount: data.amount,
       shielded_memo: data.reason,
-      walletProvider,
     });
     
     form.reset();

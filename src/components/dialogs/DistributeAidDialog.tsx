@@ -15,7 +15,7 @@ export function DistributeAidDialog({ open, onOpenChange }: DistributeAidDialogP
         <DialogHeader>
           <DialogTitle>Distribute Aid</DialogTitle>
           <DialogDescription>
-            Create a new aid distribution to send tokens to recipients through the Hedera network.
+            Create a new aid distribution to send tokens to recipients through the Midnight network.
           </DialogDescription>
         </DialogHeader>
         <DistributeAidForm onSuccess={() => onOpenChange(false)} />

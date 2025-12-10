@@ -36,26 +36,26 @@ export const useTokens = () => {
 export const useCreateToken = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const { createToken, initializeClient, isConnected, accountId } = useSmartContracts();
+  const { deployToken, initializeClient, isConnected } = useSmartContracts();
 
   return useMutation({
-    mutationFn: async (token: { name: string; symbol: string; supply: number; walletProvider: 'hashpack' | 'blade' }) => {
+    mutationFn: async (token: { name: string; symbol: string; supply: number }) => {
       if (!user) throw new Error('User not authenticated');
       
-      // Initialize Hedera client if not connected
+      // Initialize smart contract client if not connected
       if (!isConnected) {
-        await initializeClient(token.walletProvider);
+        await initializeClient();
       }
 
-      // Create the token on Hedera
-      const result = await createToken({
+      // Deploy the smart contract
+      const deployment = await deployToken({
         name: token.name,
         symbol: token.symbol,
         totalSupply: token.supply,
-        treasuryAccountId: accountId!,
+        creator: user.id,
       });
 
-      // Save to database with Hedera details
+      // Save to database with real contract details
       const { data, error } = await supabase
         .from('tokens')
         .insert({
@@ -63,8 +63,8 @@ export const useCreateToken = () => {
           name: token.name,
           symbol: token.symbol,
           supply: token.supply,
-          contract_address: result.tokenId, // Hedera Token ID
-          midnight_tx_hash: result.transactionId, // Hedera Transaction ID
+          contract_address: deployment.contractAddress,
+          midnight_tx_hash: deployment.transactionHash,
           is_active: true,
         })
         .select()
@@ -72,20 +72,19 @@ export const useCreateToken = () => {
       
       if (error) throw error;
       
-      // Log to Hedera Consensus Service for transparency
+      // Log the real transaction
       await supabase.from('midnight_transactions').insert({
-        tx_hash: result.transactionId,
+        tx_hash: deployment.transactionHash,
         tx_type: 'token_creation',
-        from_address: accountId,
+        from_address: user.id,
         amount: token.supply,
-        block_height: 0, // Hedera doesn't use block height
-        shielded: false, // Hedera is transparent by default
+        block_height: deployment.blockNumber,
+        shielded: true,
         status: 'confirmed',
         metadata: { 
-          token_id: result.tokenId,
+          contract_address: deployment.contractAddress,
           token_name: token.name,
-          token_symbol: token.symbol,
-          network: 'hedera-testnet',
+          token_symbol: token.symbol 
         },
       });
       
@@ -93,11 +92,11 @@ export const useCreateToken = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tokens'] });
-      toast.success('Token created on Hedera', {
-        description: `${data.name} (${data.symbol}) is now live on Hedera network`,
+      toast.success('Privacy token created successfully', {
+        description: `${data.name} (${data.symbol}) deployed on Midnight network`,
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error('Failed to create token', {
         description: error.message,
       });

@@ -15,7 +15,7 @@ export function CreateTokenDialog({ open, onOpenChange }: CreateTokenDialogProps
         <DialogHeader>
           <DialogTitle>Create First Token</DialogTitle>
           <DialogDescription>
-            Create a new aid token on the Hedera network for transparent distribution.
+            Create a new privacy token on the Cardano network for aid distribution.
           </DialogDescription>
         </DialogHeader>
         <CreateTokenForm onSuccess={() => onOpenChange(false)} />

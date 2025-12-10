@@ -73,7 +73,7 @@ export default function Auth() {
               </svg>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">CrisisChain</h1>
+              <h1 className="text-2xl font-bold">AfricaChainAid</h1>
               <p className="text-sm text-muted-foreground">Blockchain Aid Distribution</p>
             </div>
           </div>
