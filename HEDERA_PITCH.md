@@ -236,14 +236,14 @@ We migrated from Ethereum to Hedera because it offers:
 ## 📞 Contact & Resources
 
 **Website**: [Coming Soon]
-**Demo**: https://crisischain.lovable.app
-**GitHub**: [Repository Link]
-**Email**: team@crisischain.org
+**Demo**: https://crisischain-blockchain-powered-aid.vercel.app/
+**GitHub**:(https://github.com/Dibora12/Crisischain-Blockchain-Powered-Aid-Distribution-in-Africa2)
+**Email**: diborashibeshi@gmail.com
 
 **Documentation**:
 - Technical Guide: See HEDERA_MIGRATION_GUIDE.md
 - API Docs: [Coming Soon]
-- Video Demo: [Coming Soon]
+- Video Demo: (https://www.youtube.com/watch?v=KMIH9g2GQ-I)
 
 ## 🏆 Why We'll Win
 
